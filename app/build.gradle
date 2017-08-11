@@ -1,0 +1,59 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7"
+    id "com.github.dcendents.android-maven" version "1.5"
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "26.0.0"
+
+    dependencies {
+        compile 'com.android.support:support-annotations:25.3.1'
+        compile "com.android.support:support-v4:25.3.1"
+    }
+
+    defaultConfig {
+        applicationId "com.termux"
+        minSdkVersion 21
+        targetSdkVersion 25
+        versionCode 53
+        versionName "0.53"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        
+        externalNativeBuild {
+            ndkBuild {
+                cFlags "-std=c11", "-Wall", "-Wextra", "-Werror", "-g3", "-O1", "-fstack-protector", "--param", "ssp-buffer-size=4", "-D_FORTIFY_SOURCE=2", "-Wl,--gc-sections", "-fPIC"
+            }
+        }
+
+        ndk {
+            abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    
+    externalNativeBuild {
+        ndkBuild {
+            path "src/main/jni/Android.mk"
+        }
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+tasks.withType(Test) {
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+    }
+}
